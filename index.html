@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weetoo - Streaming Audio</title>
     <link rel="stylesheet" href="https://cloudflare.com">
-    <script src="https://jsdelivr.net"></script>
+    <script src="https://unpkg.com"></script>
 
     <style>
         :root { --main-color: #1DB954; --bg-dark: #121212; --card-bg: #181818; }
@@ -76,7 +76,7 @@
     </div>
 
     <script>
-        const SUPABASE_URL = 'https://supabase.co';
+        const { createClient } = 'https://supabase.co';
         const SUPABASE_KEY = 'sb_publishable_vDtn9OUPlaQDIMtx0bCfdw_zmP0FRia';
         
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
