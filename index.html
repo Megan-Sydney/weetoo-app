@@ -1,109 +1,193 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>WEETOO</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial;
-      background: #0F0F0F;
-      color: white;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weetoo - Streaming Audio</title>
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <script src="https://jsdelivr.net"></script>
 
-    header {
-      padding: 20px;
-      font-size: 20px;
-      font-weight: bold;
-    }
+    <style>
+        :root { --main-color: #1DB954; --bg-dark: #121212; --card-bg: #181818; }
+        body { background-color: var(--bg-dark); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: auto; }
+        header { text-align: center; margin-bottom: 30px; }
+        h1 { color: var(--main-color); font-size: 3rem; margin-bottom: 10px; }
+        
+        #searchBar { width: 100%; max-width: 500px; padding: 12px 20px; border-radius: 25px; border: none; background: #282828; color: white; outline: none; margin-bottom: 20px; }
 
-    .section {
-      padding: 15px;
-    }
+        main { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+        @media (max-width: 768px) { main { grid-template-columns: 1fr; } }
 
-    .songs {
-      display: flex;
-      overflow-x: auto;
-    }
+        .player { background: var(--card-bg); padding: 30px; border-radius: 15px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .track-art { width: 250px; height: 250px; margin: auto; border-radius: 10px; background-size: cover; background-position: center; background-image: url('https://placeholder.com'); box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
+        .track-details h2 { margin: 25px 0 5px; font-size: 1.5rem; }
+        .track-details h3 { color: #b3b3b3; font-weight: 400; margin-bottom: 20px; }
 
-    .card {
-      min-width: 160px;
-      margin-right: 10px;
-      background: #1a1a1a;
-      border-radius: 10px;
-      padding: 10px;
-    }
-    
-    .card p {
-      white-space: nowrap;
-      overflow: hiden;
-      texte-overflow: ellipsis;
-    }
+        .slider_container { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 20px 0; }
+        .seek_slider { flex-grow: 1; accent-color: var(--main-color); cursor: pointer; }
 
-    button {
-      background: #FF7A00;
-      border: none;
-      padding: 10px;
-      color: white;
-      border-radius: 5px;
-      margin-top: 10px;
-      width: 100%;
-    }
+        .controls { display: flex; justify-content: center; align-items: center; gap: 25px; }
+        .controls button { background: none; border: none; color: white; cursor: pointer; transition: 0.3s; }
+        .controls button:hover { color: var(--main-color); transform: scale(1.1); }
 
-    .premium {
-      background: #111;
-      padding: 20px;
-      margin: 15px;
-      border-radius: 10px;
-      text-align: center;
-    }
-  </style>
+        .playlist { background: var(--card-bg); padding: 20px; border-radius: 15px; max-height: 500px; overflow-y: auto; }
+        .playlist h3 { border-bottom: 1px solid #282828; padding-bottom: 10px; }
+        .track-item { display: flex; align-items: center; padding: 12px; border-radius: 8px; cursor: pointer; transition: 0.2s; margin-bottom: 5px; }
+        .track-item:hover { background: #282828; }
+        .track-item.active { background: #282828; border-left: 4px solid var(--main-color); }
+    </style>
 </head>
-
 <body>
 
-<header>
-  WEETOO 🎧
-</header>
+    <div class="container">
+        <header>
+            <h1>Weetoo</h1>
+            <input type="text" id="searchBar" placeholder="Rechercher un titre ou un artiste..." onkeyup="searchMusic()">
+        </header>
 
-<div class="section">
-  <h3>Top du moment</h3>
-  <div class="songs">
-    <div class="card">
-      <p>Son 1</p>
-      <button onclick="playSong()">Play</button>
+        <main>
+            <div class="player">
+                <div class="track-art" id="track-art"></div>
+                <div class="track-details">
+                    <h2 id="track-name">Prêt à jouer</h2>
+                    <h3 id="track-artist">Choisissez une musique</h3>
+                </div>
+
+                <div class="slider_container">
+                    <span id="current-time">00:00</span>
+                    <input type="range" min="0" max="100" value="0" class="seek_slider" id="seek_slider" onchange="seekTo()">
+                    <span id="total-duration">00:00</span>
+                </div>
+
+                <div class="controls">
+                    <button onclick="prevTrack()"><i class="fa fa-step-backward fa-2x"></i></button>
+                    <button onclick="playPauseTrack()" id="playpause-btn"><i class="fa fa-play-circle fa-4x"></i></button>
+                    <button onclick="nextTrack()"><i class="fa fa-step-forward fa-2x"></i></button>
+                </div>
+            </div>
+            <div class="playlist">
+                <h3>Ma Sélection</h3>
+                <div id="playlist-container">
+                    <p style="color:#b3b3b3; padding:20px;">Chargement de la bibliothèque...</p>
+                </div>
+            </div>
+        </main>
     </div>
 
-    <div class="card">
-      <p>Son 2</p>
-      <button onclick="playSong()">Play</button>
-    </div>
-  </div>
-</div>
+    <script>
+        const SUPABASE_URL = 'https://sxjeysiptdamrytiwrpk.supabase.co/rest/v1/';
+        const SUPABASE_KEY = 'sb_publishable_vDtn9OUPlaQDIMtx0bCfdw_zmP0FRia';
+        
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-<div class="section">
-<h3 class="titre">Nouveautés</h3>
-  <div class="songs">
-    <div class="card">
-      <p>Son 3</p>
-      <button onclick="playSong()">Play</button>
-    </div>
-  </div>
-</div>
+        let allTracks = [];
+        let track_index = 0;
+        let isPlaying = false;
+        let curr_track = document.createElement('audio');
+        async function fetchMusics() {
+            let { data: musics, error } = await supabaseClient.from('musics').select('*');
+            if (error) {
+                console.error("Erreur:", error);
+                document.getElementById('playlist-container').innerHTML = "Erreur de connexion à la base.";
+            } else {
+                allTracks = musics;
+                if(allTracks.length > 0) {
+                    loadTrack(0);
+                    renderPlaylist(allTracks);
+                } else {
+                    document.getElementById('playlist-container').innerHTML = "Aucune musique trouvée.";
+                }
+            }
+        }
 
-<div class="premium">
-  <h2>Passe Premium 🔥</h2>
-  <p>Accès illimité + téléchargement</p>
-  <button onclick="alert('Contact WhatsApp pour activer')">
-    Activer Premium
-  </button>
-</div>
+        function loadTrack(index) {
+            track_index = index;
+            curr_track.src = allTracks[index].audio_url;
+            curr_track.load();
 
-<script>
-  function playSong() {
-    alert("Lecture du son...");
-  }
-</script>
+            document.getElementById("track-name").innerText = allTracks[index].title;
+            document.getElementById("track-artist").innerText = allTracks[index].artist;
+            document.getElementById("track-art").style.backgroundImage = `url(${allTracks[index].cover_url})`;
 
+            curr_track.addEventListener("ended", nextTrack);
+            setInterval(updateSlider, 1000);
+        }
+
+        function playPauseTrack() {
+            if (!isPlaying) {
+                curr_track.play();
+                isPlaying = true;
+                document.getElementById("playpause-btn").innerHTML = '<i class="fa fa-pause-circle fa-4x"></i>';
+            } else {
+                curr_track.pause();
+                isPlaying = false;
+                document.getElementById("playpause-btn").innerHTML = '<i class="fa fa-play-circle fa-4x"></i>';
+            }
+        }
+
+        function nextTrack() {
+            track_index = (track_index + 1) % allTracks.length;
+            loadTrack(track_index);
+            playTrack();
+        }
+
+        function prevTrack() {
+            track_index = (track_index - 1 + allTracks.length) % allTracks.length;
+            loadTrack(track_index);
+            playTrack();
+        }
+
+        function playTrack() {
+            curr_track.play();
+            isPlaying = true;
+            document.getElementById("playpause-btn").innerHTML = '<i class="fa fa-pause-circle fa-4x"></i>';
+        }
+
+        function seekTo() {
+            let seekto = curr_track.duration * (document.getElementById("seek_slider").value / 100);
+            curr_track.currentTime = seekto;
+        }
+
+        function updateSlider() {
+            if (!isNaN(curr_track.duration)) {
+                let seekPosition = curr_track.currentTime * (100 / curr_track.duration);
+                document.getElementById("seek_slider").value = seekPosition;
+                
+                // Calcul du temps
+                let currentMins = Math.floor(curr_track.currentTime / 60);
+                let currentSecs = Math.floor(curr_track.currentTime - currentMins * 60);
+                let durationMins = Math.floor(curr_track.duration / 60);
+                let durationSecs = Math.floor(curr_track.duration - durationMins * 60);
+
+                if (currentSecs < 10) { currentSecs = "0" + currentSecs; }
+                if (durationSecs < 10) { durationSecs = "0" + durationSecs; }
+
+                document.getElementById("current-time").innerHTML = currentMins + ":" + currentSecs;
+                document.getElementById("total-duration").innerHTML = durationMins + ":" + durationSecs;
+            }
+        }
+
+        function renderPlaylist(list) {
+            const container = document.getElementById('playlist-container');
+            container.innerHTML = "";
+            list.forEach((track, index) => {
+                const div = document.createElement('div');
+                div.classList.add('track-item');
+                div.innerHTML = `<div><strong>${track.title}</strong><br><small>${track.artist}</small></div>`;
+                div.onclick = () => { loadTrack(index); playTrack(); };
+                container.appendChild(div);
+            });
+        }
+
+        function searchMusic() {
+            const term = document.getElementById('searchBar').value.toLowerCase();
+            const filtered = allTracks.filter(t => t.title.toLowerCase().includes(term) || t.artist.toLowerCase().includes(term));
+            renderPlaylist(filtered);
+        }
+
+        // Lancement
+        fetchMusics();
+    </script>
 </body>
 </html>
