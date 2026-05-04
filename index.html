@@ -106,9 +106,9 @@
             curr_track.src = allTracks[index].audio_url;
             curr_track.load();
 
-            document.getElementById("track-name").innerText = allTracks[index].title;
-            document.getElementById("track-artist").innerText = allTracks[index].artist;
+            document.getElementById("track-name").innerText = allTracks[index].title; 
             document.getElementById("track-art").style.backgroundImage = `url(${allTracks[index].cover_url})`;
+
 
             curr_track.addEventListener("ended", nextTrack);
             setInterval(updateSlider, 1000);
