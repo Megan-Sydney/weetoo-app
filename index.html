@@ -89,7 +89,7 @@
             let { data: musics, error } = await supabaseClient.from('musics').select('*');
             if (error) {
                 console.error("Erreur:", error);
-                document.getElementById('playlist-container').innerHTML = "Erreur de connexion à la base.";
+                document.getElementById("track-name").innerText = allTracks[index].tilte;
             } else {
                 allTracks = musics;
                 if(allTracks.length > 0) {
