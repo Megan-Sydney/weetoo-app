@@ -4,93 +4,64 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weetoo - Streaming Audio</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <script src="https://unpkg.com"></script>
     <style>
         :root { --main-color: #1DB954; --bg-dark: #121212; --card-bg: #181818; }
         body { background-color: var(--bg-dark); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
         .container { max-width: 900px; margin: auto; }
         header { text-align: center; margin-bottom: 30px; }
         h1 { color: var(--main-color); font-size: 3rem; margin-bottom: 10px; }
-
-        <button onclick="handleLogout()" id="logout-btn" class="hidden">Déconnexion</button>
+        #logout-btn { background: #e74c3c; color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; margin-top: 10px; }
         #searchBar { width: 100%; max-width: 500px; padding: 12px 20px; border-radius: 25px; border: none; background: #282828; color: white; outline: none; margin-bottom: 20px; }
-
-        #logout-btn { 
-           background: #e74c3c; 
-           color: white; 
-           border: none; 
-           padding: 8px 15px; 
-           border-radius: 20px; 
-           cursor: pointer; 
-           font-weight: bold;
-           margin-top: 10px;
-      }
         main { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
-        @media (max-width: 768px) { main { grid-template-columns: 1fr; } }
-
-        .player { background: var(--card-bg); padding: 30px; border-radius: 15px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .track-art { width: 250px; height: 250px; margin: auto; border-radius: 10px; background-size: cover; background-position: center; background-image: url('https://placeholder.com'); box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
-        .track-details h2 { margin: 25px 0 5px; font-size: 1.5rem; }
-        .track-details h3 { color: #b3b3b3; font-weight: 400; margin-bottom: 20px; }
-
+        .player { background: var(--card-bg); padding: 30px; border-radius: 15px; text-align: center; }
+        .track-art { width: 250px; height: 250px; margin: auto; border-radius: 10px; background-size: cover; background-position: center; background-image: url('https://placeholder.com'); }
         .slider_container { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 20px 0; }
         .seek_slider { flex-grow: 1; accent-color: var(--main-color); cursor: pointer; }
-
         .controls { display: flex; justify-content: center; align-items: center; gap: 25px; }
         .controls button { background: none; border: none; color: white; cursor: pointer; transition: 0.3s; }
-        .controls button:hover { color: var(--main-color); transform: scale(1.1); }
-
         .playlist { background: var(--card-bg); padding: 20px; border-radius: 15px; max-height: 500px; overflow-y: auto; }
-        .playlist h3 { border-bottom: 1px solid #282828; padding-bottom: 10px; }
-        .track-item { display: flex; align-items: center; padding: 12px; border-radius: 8px; cursor: pointer; transition: 0.2s; margin-bottom: 5px; }
+        .track-item { display: flex; align-items: center; padding: 12px; border-radius: 8px; cursor: pointer; margin-bottom: 5px; border-bottom: 1px solid #282828; }
         .track-item:hover { background: #282828; }
-        .track-item.active { background: #282828; border-left: 4px solid var(--main-color); }
+        .auth-container { background: rgba(0,0,0,0.95); position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; z-index: 9999; }
+        .auth-box { background: #181818; padding: 40px; border-radius: 15px; width: 300px; text-align: center; border: 1px solid #333; }
+        .auth-box input { width: 100%; padding: 10px; margin: 10px 0; background: #282828; border: none; color: white; border-radius: 5px; box-sizing: border-box; }
+        #main-auth-btn { background: #1DB954; color: white; border: none; padding: 12px; width: 100%; border-radius: 25px; cursor: pointer; font-weight: bold; }
+        #toggle-auth { color: #b3b3b3; cursor: pointer; margin-top: 15px; font-size: 0.8rem; text-decoration: underline; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
-
-    <div class="container">
-        <header>
-            <h1>Weetoo</h1>
-            <input type="text" id="searchBar" placeholder="Rechercher un titre ou un artiste..." onkeyup="searchMusic()">
-        </header>
-
-        <main>
-            <div id="auth-section" class="auth-container">
-                <div class="auth-box">
-                 <h2 id="auth-title">Connexion à Weetoo</h2>
-                 <input type="email" id="auth-email" placeholder="Ton email">
-                 <input type="password" id="auth-password" placeholder="Ton mot de passe">
-            <div class="auth-buttons">
+    <div id="auth-section" class="auth-container">
+        <div class="auth-box">
+            <h2 id="auth-title">Connexion à Weetoo</h2>
+            <input type="email" id="auth-email" placeholder="Email">
+            <input type="password" id="auth-password" placeholder="Mot de passe">
             <button onclick="handleAuth()" id="main-auth-btn">Se connecter</button>
             <p onclick="toggleAuthMode()" id="toggle-auth">Pas de compte ? Créer un compte</p>
         </div>
     </div>
-</div>
 
-<style>
-    .auth-container { background: rgba(0,0,0,0.8); position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; z-index: 1000; }
-    .auth-box { background: #1e1e1e; padding: 40px; border-radius: 15px; text-align: center; width: 320px; border: 1px solid #333; }
-    .auth-box input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 5px; border: none; background: #282828; color: white; }
-    #main-auth-btn { background: #1DB954; color: white; border: none; padding: 12px; width: 100%; border-radius: 25px; cursor: pointer; font-weight: bold; margin-top: 10px; }
-    #toggle-auth { color: #b3b3b3; font-size: 0.9rem; margin-top: 15px; cursor: pointer; text-decoration: underline; }
-    .hidden { display: none !important; }
-</style>
+    <div class="container">
+        <header>
+            <h1>Weetoo</h1>
+            <button onclick="handleLogout()" id="logout-btn" class="hidden">Déconnexion</button>
+            <br><br>
+            <input type="text" id="searchBar" placeholder="Rechercher..." onkeyup="searchMusic()">
+        </header>
+        <main>
             <div class="player">
                 <div class="track-art" id="track-art"></div>
                 <div class="track-details">
                     <h2 id="track-name">Prêt à jouer</h2>
-                    <h3 id="track-artist">Choisissez une musique</h3>
+                    <h3 id="track-artist" style="color:#b3b3b3">Choisissez une musique</h3>
                 </div>
-
                 <div class="slider_container">
                     <span id="current-time">00:00</span>
                     <input type="range" min="0" max="100" value="0" class="seek_slider" id="seek_slider" onchange="seekTo()">
                     <span id="total-duration">00:00</span>
                 </div>
-
                 <div class="controls">
                     <button onclick="prevTrack()"><i class="fa fa-step-backward fa-2x"></i></button>
                     <button onclick="playPauseTrack()" id="playpause-btn"><i class="fa fa-play-circle fa-4x"></i></button>
@@ -99,163 +70,82 @@
             </div>
             <div class="playlist">
                 <h3>Ma Sélection</h3>
-                <div id="playlist-container">
-                    <p style="color:#b3b3b3; padding:20px;">Chargement de la bibliothèque...</p>
-                </div>
+                <div id="playlist-container"></div>
             </div>
         </main>
     </div>
 
     <script>
-        const SUPABASE_URL = 'https://sxjeysiptdamrytiwrpk.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_vDtn9OUPlaQDIMtx0bCfdw_zmP0FRia';
-        
+        const SUPABASE_URL = 'https://supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_vDtN9OUPLAQDlMtx0bCfdw_zmP9FRia';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let isSignUpMode = false;
+        let allTracks = [], track_index = 0, isPlaying = false, curr_track = document.createElement('audio'), isSignUpMode = false;
 
         function toggleAuthMode() {
-          isSignUpMode = !isSignUpMode;
-          document.getElementById('auth-title').innerText = isSignUpMode ? "Créer un compte" : "Connexion à Weetoo";
-          document.getElementById('main-auth-btn').innerText = isSignUpMode ? "S'inscrire" : "Se connecter";
-          document.getElementById('toggle-auth').innerText = isSignUpMode ? "Déjà un compte ? Se connecter" : "Pas de compte ? Créer un compte";
-    }
+            isSignUpMode = !isSignUpMode;
+            document.getElementById('auth-title').innerText = isSignUpMode ? "Créer un compte" : "Connexion à Weetoo";
+            document.getElementById('main-auth-btn').innerText = isSignUpMode ? "S'inscrire" : "Se connecter";
+            document.getElementById('toggle-auth').innerText = isSignUpMode ? "Déjà un compte ? Se connecter" : "Pas de compte ? Créer un compte";
+        }
 
-     async function handleAuth() {
-        const email = document.getElementById('auth-email').value;
-        const password = document.getElementById('auth-password').value;
-        if (isSignUpMode) {
-            const { data, error } = await supabaseClient.auth.signUp({ email, password });
-            if (error) alert("Erreur : " + error.message);
-            else alert("Vérifie tes emails pour confirmer !");
-        } else {
-            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-            if (error) alert("Erreur : " + error.message);
-            else {
+        async function handleAuth() {
+            const email = document.getElementById('auth-email').value, password = document.getElementById('auth-password').value;
+            if (isSignUpMode) {
+                const { error } = await supabaseClient.auth.signUp({ email, password });
+                if (error) alert(error.message); else alert("Compte créé !");
+            } else {
+                const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                if (error) alert(error.message); else location.reload();
+            }
+        }
+
+        async function handleLogout() { await supabaseClient.auth.signOut(); location.reload(); }
+
+        async function checkUser() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (user) {
                 document.getElementById('auth-section').classList.add('hidden');
+                document.getElementById('logout-btn').classList.remove('hidden');
                 fetchMusics();
             }
         }
-    }
 
-     async function checkUser() {
-       const { data: { user } } = await supabaseClient.auth.getUser();
-        if (user) {
-        document.getElementById('auth-section').classList.add('hidden');
-        if(document.getElementById('logout-btn')) {
-            document.getElementById('logout-btn').classList.remove('hidden');
-        }
-        fetchMusics();
-    }
-}
-        async function handleLogout() {
-         await supabaseClient.auth.signOut();
-         location.reload(); 
-}
-    }
-    checkUser();
-        let allTracks = [];
-        let track_index = 0;
-        let isPlaying = false;
-        let curr_track = document.createElement('audio');
         async function fetchMusics() {
             let { data: musics, error } = await supabaseClient.from('musics').select('*');
-            if (error) {
-                console.error("Erreur:", error);
-                document.getElementById("track-name").innerText = allTracks[index].tilte;
-            } else {
-                allTracks = musics;
-                if(allTracks.length > 0) {
-                    loadTrack(0);
-                    renderPlaylist(allTracks);
-                } else {
-                    document.getElementById('playlist-container').innerHTML = "Aucune musique trouvée.";
-                }
-            }
+            if (!error && musics.length > 0) { allTracks = musics; loadTrack(0); renderPlaylist(allTracks); }
         }
 
         function loadTrack(index) {
-            track_index = index;
-            curr_track.src = allTracks[index].audio_url;
-            curr_track.load();
-
-            document.getElementById("track-artist").innerText = allTracks[index].artist; 
+            track_index = index; curr_track.src = allTracks[index].audio_url; curr_track.load();
+            document.getElementById("track-name").innerText = allTracks[index].title;
+            document.getElementById("track-artist").innerText = allTracks[index].artist;
             document.getElementById("track-art").style.backgroundImage = `url(${allTracks[index].cover_url})`;
-
-            curr_track.addEventListener("ended", nextTrack);
+            curr_track.onended = nextTrack;
             setInterval(updateSlider, 1000);
         }
-        function renderPlaylist(list) {
-        const container = document.getElementById('playlist-container');
-             container.innerHTML = "";
-             list.forEach((track, index) => {
-        const div = document.createElement('div');
-             div.classList.add('track-item');
 
-             div.innerHTML = `<div><strong>${track.tilte}</strong><br><small>${track.artist}</small></div>`;
-             div.onclick = () => { loadTrack(index); playTrack(); };
-             container.appendChild(div);
-
-        function playPauseTrack() {
-            if (!isPlaying) {
-                curr_track.play();
-                isPlaying = true;
-                document.getElementById("playpause-btn").innerHTML = '<i class="fa fa-pause-circle fa-4x"></i>';
-            } else {
-                curr_track.pause();
-                isPlaying = false;
-                document.getElementById("playpause-btn").innerHTML = '<i class="fa fa-play-circle fa-4x"></i>';
-            }
-        }
-
-        function nextTrack() {
-            track_index = (track_index + 1) % allTracks.length;
-            loadTrack(track_index);
-            playTrack();
-        }
-
-        function prevTrack() {
-            track_index = (track_index - 1 + allTracks.length) % allTracks.length;
-            loadTrack(track_index);
-            playTrack();
-        }
-
-        function playTrack() {
-            curr_track.play();
-            isPlaying = true;
-            document.getElementById("playpause-btn").innerHTML = '<i class="fa fa-pause-circle fa-4x"></i>';
-        }
-
-        function seekTo() {
-            let seekto = curr_track.duration * (document.getElementById("seek_slider").value / 100);
-            curr_track.currentTime = seekto;
-        }
+        function playPauseTrack() { isPlaying ? pauseTrack() : playTrack(); }
+        function playTrack() { curr_track.play(); isPlaying = true; document.getElementById("playpause-btn").innerHTML = '<i class="fa fa-pause-circle fa-4x"></i>'; }
+        function pauseTrack() { curr_track.pause(); isPlaying = false; document.getElementById("playpause-btn").innerHTML = '<i class="fa fa-play-circle fa-4x"></i>'; }
+        function nextTrack() { track_index = (track_index + 1) % allTracks.length; loadTrack(track_index); playTrack(); }
+        function prevTrack() { track_index = (track_index - 1 + allTracks.length) % allTracks.length; loadTrack(track_index); playTrack(); }
+        function seekTo() { curr_track.currentTime = curr_track.duration * (document.getElementById("seek_slider").value / 100); }
 
         function updateSlider() {
             if (!isNaN(curr_track.duration)) {
-                let seekPosition = curr_track.currentTime * (100 / curr_track.duration);
-                document.getElementById("seek_slider").value = seekPosition;
-                
-                // Calcul du temps
-                let currentMins = Math.floor(curr_track.currentTime / 60);
-                let currentSecs = Math.floor(curr_track.currentTime - currentMins * 60);
-                let durationMins = Math.floor(curr_track.duration / 60);
-                let durationSecs = Math.floor(curr_track.duration - durationMins * 60);
-
-                if (currentSecs < 10) { currentSecs = "0" + currentSecs; }
-                if (durationSecs < 10) { durationSecs = "0" + durationSecs; }
-
-                document.getElementById("current-time").innerHTML = currentMins + ":" + currentSecs;
-                document.getElementById("total-duration").innerHTML = durationMins + ":" + durationSecs;
+                document.getElementById("seek_slider").value = curr_track.currentTime * (100 / curr_track.duration);
+                let cm = Math.floor(curr_track.currentTime / 60), cs = Math.floor(curr_track.currentTime % 60);
+                let dm = Math.floor(curr_track.duration / 60), ds = Math.floor(curr_track.duration % 60);
+                document.getElementById("current-time").innerText = `${cm}:${cs < 10 ? '0' + cs : cs}`;
+                document.getElementById("total-duration").innerText = `${dm}:${ds < 10 ? '0' + ds : ds}`;
             }
         }
 
         function renderPlaylist(list) {
-            const container = document.getElementById('playlist-container');
-            container.innerHTML = "";
+            const container = document.getElementById('playlist-container'); container.innerHTML = "";
             list.forEach((track, index) => {
-                const div = document.createElement('div');
-                div.classList.add('track-item');
+                const div = document.createElement('div'); div.classList.add('track-item');
                 div.innerHTML = `<div><strong>${track.title}</strong><br><small>${track.artist}</small></div>`;
                 div.onclick = () => { loadTrack(index); playTrack(); };
                 container.appendChild(div);
@@ -268,8 +158,7 @@
             renderPlaylist(filtered);
         }
 
-        // Lancement
-        fetchMusics();
+        checkUser();
     </script>
 </body>
 </html>
