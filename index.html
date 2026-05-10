@@ -13,9 +13,20 @@
         .container { max-width: 900px; margin: auto; }
         header { text-align: center; margin-bottom: 30px; }
         h1 { color: var(--main-color); font-size: 3rem; margin-bottom: 10px; }
-        
+
+        <button onclick="handleLogout()" id="logout-btn" class="hidden">Déconnexion</button>
         #searchBar { width: 100%; max-width: 500px; padding: 12px 20px; border-radius: 25px; border: none; background: #282828; color: white; outline: none; margin-bottom: 20px; }
 
+        #logout-btn { 
+           background: #e74c3c; 
+           color: white; 
+           border: none; 
+           padding: 8px 15px; 
+           border-radius: 20px; 
+           cursor: pointer; 
+           font-weight: bold;
+           margin-top: 10px;
+      }
         main { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
         @media (max-width: 768px) { main { grid-template-columns: 1fr; } }
 
@@ -47,6 +58,26 @@
         </header>
 
         <main>
+            <div id="auth-section" class="auth-container">
+                <div class="auth-box">
+                 <h2 id="auth-title">Connexion à Weetoo</h2>
+                 <input type="email" id="auth-email" placeholder="Ton email">
+                 <input type="password" id="auth-password" placeholder="Ton mot de passe">
+            <div class="auth-buttons">
+            <button onclick="handleAuth()" id="main-auth-btn">Se connecter</button>
+            <p onclick="toggleAuthMode()" id="toggle-auth">Pas de compte ? Créer un compte</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .auth-container { background: rgba(0,0,0,0.8); position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; z-index: 1000; }
+    .auth-box { background: #1e1e1e; padding: 40px; border-radius: 15px; text-align: center; width: 320px; border: 1px solid #333; }
+    .auth-box input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 5px; border: none; background: #282828; color: white; }
+    #main-auth-btn { background: #1DB954; color: white; border: none; padding: 12px; width: 100%; border-radius: 25px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+    #toggle-auth { color: #b3b3b3; font-size: 0.9rem; margin-top: 15px; cursor: pointer; text-decoration: underline; }
+    .hidden { display: none !important; }
+</style>
             <div class="player">
                 <div class="track-art" id="track-art"></div>
                 <div class="track-details">
@@ -81,6 +112,48 @@
         
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        let isSignUpMode = false;
+
+        function toggleAuthMode() {
+          isSignUpMode = !isSignUpMode;
+          document.getElementById('auth-title').innerText = isSignUpMode ? "Créer un compte" : "Connexion à Weetoo";
+          document.getElementById('main-auth-btn').innerText = isSignUpMode ? "S'inscrire" : "Se connecter";
+          document.getElementById('toggle-auth').innerText = isSignUpMode ? "Déjà un compte ? Se connecter" : "Pas de compte ? Créer un compte";
+    }
+
+     async function handleAuth() {
+        const email = document.getElementById('auth-email').value;
+        const password = document.getElementById('auth-password').value;
+        if (isSignUpMode) {
+            const { data, error } = await supabaseClient.auth.signUp({ email, password });
+            if (error) alert("Erreur : " + error.message);
+            else alert("Vérifie tes emails pour confirmer !");
+        } else {
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            if (error) alert("Erreur : " + error.message);
+            else {
+                document.getElementById('auth-section').classList.add('hidden');
+                fetchMusics();
+            }
+        }
+    }
+
+     async function checkUser() {
+       const { data: { user } } = await supabaseClient.auth.getUser();
+        if (user) {
+        document.getElementById('auth-section').classList.add('hidden');
+        if(document.getElementById('logout-btn')) {
+            document.getElementById('logout-btn').classList.remove('hidden');
+        }
+        fetchMusics();
+    }
+}
+        async function handleLogout() {
+         await supabaseClient.auth.signOut();
+         location.reload(); 
+}
+    }
+    checkUser();
         let allTracks = [];
         let track_index = 0;
         let isPlaying = false;
