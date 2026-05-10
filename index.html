@@ -155,7 +155,7 @@
         function searchMusic() {
             const term = document.getElementById('searchBar').value.toLowerCase();
             const filtered = allTracks.filter(t => t.title.toLowerCase().includes(term) || t.artist.toLowerCase().includes(term));
-            renderPlaylist(filtered);
+            renderPlaylist(alltracks);
         }
 
         checkUser();
