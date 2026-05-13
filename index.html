@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weetoo - Streaming Audio</title>
-    <link rel="stylesheet" href="https://cloudflare.com">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="cloudflare.com">
+    <script src="jsdelivr.net"></script>
     <style>
         :root { --main-color: #1DB954; --bg-dark: #121212; --card-bg: #181818; }
         body { background-color: var(--bg-dark); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
@@ -16,7 +16,7 @@
         #searchBar { width: 100%; max-width: 500px; padding: 12px 20px; border-radius: 25px; border: none; background: #282828; color: white; outline: none; margin-bottom: 20px; }
         main { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
         .player { background: var(--card-bg); padding: 30px; border-radius: 15px; text-align: center; }
-        .track-art { width: 250px; height: 250px; margin: auto; border-radius: 10px; background-size: cover; background-position: center; background-image: url('https://placeholder.com'); }
+        .track-art { width: 250px; height: 250px; margin: auto; border-radius: 10px; background-size: cover; background-position: center; background-image: url('unsplash.com'); }
         .slider_container { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 20px 0; }
         .seek_slider { flex-grow: 1; accent-color: var(--main-color); cursor: pointer; }
         .controls { display: flex; justify-content: center; align-items: center; gap: 25px; }
@@ -76,12 +76,17 @@
     </div>
 
     <script>
-        const SUPABASE_URL = 'https://supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_vDtN9OUPLAQDlMtx0bCfdw_zmP9FRia';
-        const { createClient } = supabase;
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        let allTracks = [];
+        let track_index = 0;
+        let isPlaying = false;
+        let curr_track = document.createElement('audio');
+        let isSignUpMode = false;
 
-        let allTracks = [], track_index = 0, isPlaying = false, curr_track = document.createElement('audio'), isSignUpMode = false;
+        const SUPABASE_URL = 'supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_vDtN9OUPLAQDlMtx0bCfdw_zmP9FRia';
+        
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
 
         function toggleAuthMode() {
             isSignUpMode = !isSignUpMode;
@@ -91,17 +96,21 @@
         }
 
         async function handleAuth() {
-            const email = document.getElementById('auth-email').value, password = document.getElementById('auth-password').value;
+            const email = document.getElementById('auth-email').value;
+            const password = document.getElementById('auth-password').value;
             if (isSignUpMode) {
                 const { error } = await supabaseClient.auth.signUp({ email, password });
-                if (error) alert(error.message); else alert("Compte créé !");
+                if (error) alert(error.message); else alert("Compte créé ! Connecte-toi maintenant.");
             } else {
                 const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
                 if (error) alert(error.message); else location.reload();
             }
         }
 
-        async function handleLogout() { await supabaseClient.auth.signOut(); location.reload(); }
+        async function handleLogout() { 
+            await supabaseClient.auth.signOut(); 
+            location.reload(); 
+        }
 
         async function checkUser() {
             const { data: { user } } = await supabaseClient.auth.getUser();
@@ -114,11 +123,17 @@
 
         async function fetchMusics() {
             let { data: musics, error } = await supabaseClient.from('musics').select('*');
-            if (!error && musics.length > 0) { allTracks = musics; loadTrack(0); renderPlaylist(allTracks); }
+            if (!error && musics.length > 0) { 
+                allTracks = musics; 
+                loadTrack(0); 
+                renderPlaylist(allTracks); 
+            }
         }
 
         function loadTrack(index) {
-            track_index = index; curr_track.src = allTracks[index].audio_url; curr_track.load();
+            track_index = index; 
+            curr_track.src = allTracks[index].audio_url; 
+            curr_track.load();
             document.getElementById("track-name").innerText = allTracks[index].title;
             document.getElementById("track-artist").innerText = allTracks[index].artist;
             document.getElementById("track-art").style.backgroundImage = `url(${allTracks[index].cover_url})`;
@@ -144,9 +159,11 @@
         }
 
         function renderPlaylist(list) {
-            const container = document.getElementById('playlist-container'); container.innerHTML = "";
+            const container = document.getElementById('playlist-container'); 
+            container.innerHTML = "";
             list.forEach((track, index) => {
-                const div = document.createElement('div'); div.classList.add('track-item');
+                const div = document.createElement('div'); 
+                div.classList.add('track-item');
                 div.innerHTML = `<div><strong>${track.title}</strong><br><small>${track.artist}</small></div>`;
                 div.onclick = () => { loadTrack(index); playTrack(); };
                 container.appendChild(div);
@@ -156,7 +173,7 @@
         function searchMusic() {
             const term = document.getElementById('searchBar').value.toLowerCase();
             const filtered = allTracks.filter(t => t.title.toLowerCase().includes(term) || t.artist.toLowerCase().includes(term));
-            renderPlaylist(alltracks);
+            renderPlaylist(filtered);
         }
 
         checkUser();
