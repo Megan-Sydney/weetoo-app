@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weetoo - Streaming Audio</title>
+    <!-- Liens CDN sécurisés et complets -->
     <link rel="stylesheet" href="cloudflare.com">
-    <script src="jsdelivr.net"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root { --main-color: #1DB954; --bg-dark: #121212; --card-bg: #181818; }
         body { background-color: var(--bg-dark); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
@@ -82,9 +83,10 @@
         let curr_track = document.createElement('audio');
         let isSignUpMode = false;
 
-        const SUPABASE_URL = 'supabase.co';
+        const SUPABASE_URL = 'https://sxjeysiqtdamrytiwrpk.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_vDtN9OUPLAQDlMtx0bCfdw_zmP9FRia';
         
+        // Connexion sécurisée
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         function toggleAuthMode() {
