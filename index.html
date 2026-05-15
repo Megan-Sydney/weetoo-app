@@ -3,60 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weetoo - Streaming Audio</title>
-    <!-- Liens CDN sécurisés et complets -->
-    <link rel="stylesheet" href="cloudflare.com">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>Weetoo - Musique Africaine</title>
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <script src="https://jsdelivr.net"></script>
     <style>
-        :root { --main-color: #1DB954; --bg-dark: #121212; --card-bg: #181818; }
-        body { background-color: var(--bg-dark); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
-        .container { max-width: 900px; margin: auto; }
-        header { text-align: center; margin-bottom: 30px; }
-        h1 { color: var(--main-color); font-size: 3rem; margin-bottom: 10px; }
-        #logout-btn { background: #e74c3c; color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; margin-top: 10px; }
-        #searchBar { width: 100%; max-width: 500px; padding: 12px 20px; border-radius: 25px; border: none; background: #282828; color: white; outline: none; margin-bottom: 20px; }
-        main { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
-        .player { background: var(--card-bg); padding: 30px; border-radius: 15px; text-align: center; }
-        .track-art { width: 250px; height: 250px; margin: auto; border-radius: 10px; background-size: cover; background-position: center; background-image: url('unsplash.com'); }
-        .slider_container { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 20px 0; }
+        :root { --main-color: #FF6B00; --bg-dark: #0A0A0A; --card-bg: #141414; }
+        body { background-color: var(--bg-dark); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 15px; }
+        .container { max-width: 500px; margin: auto; }
+        header { text-align: center; margin-bottom: 25px; padding-top: 10px; }
+        h1 { color: var(--main-color); font-size: 2.8rem; margin: 0 0 5px 0; font-weight: 800; cursor: pointer; }
+        .subtitle { color: #b3b3b3; font-size: 0.9rem; margin-bottom: 15px; }
+        
+        .nav-buttons { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 10px; }
+        .btn-premium { background: linear-gradient(45deg, #FF6B00, #FFA500); color: black; border: none; padding: 8px 14px; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
+        .btn-artist { background: #222; color: #fff; border: 1px solid var(--main-color); padding: 8px 14px; border-radius: 20px; cursor: pointer; font-size: 0.8rem; }
+        
+        #searchBar { width: 100%; padding: 14px 20px; border-radius: 25px; border: 1px solid #222; background: #181818; color: white; outline: none; box-sizing: border-box; margin-bottom: 20px; }
+
+        .player { background: var(--card-bg); padding: 25px; border-radius: 20px; text-align: center; border: 1px solid #222; margin-bottom: 25px; }
+        .track-art { width: 220px; height: 220px; margin: auto; border-radius: 15px; background-size: cover; background-position: center; background-image: url('https://unsplash.com'); }
+        .track-details h2 { margin: 20px 0 5px 0; font-size: 1.4rem; }
+        .track-details h3 { color: #b3b3b3; font-weight: 400; margin: 0 0 10px 0; }
+        .stream-counter { font-size: 0.85rem; color: var(--main-color); margin-bottom: 15px; display: block; }
+
+        .slider_container { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 20px 0; color: #b3b3b3; font-size: 0.85rem; }
         .seek_slider { flex-grow: 1; accent-color: var(--main-color); cursor: pointer; }
-        .controls { display: flex; justify-content: center; align-items: center; gap: 25px; }
-        .controls button { background: none; border: none; color: white; cursor: pointer; transition: 0.3s; }
-        .playlist { background: var(--card-bg); padding: 20px; border-radius: 15px; max-height: 500px; overflow-y: auto; }
-        .track-item { display: flex; align-items: center; padding: 12px; border-radius: 8px; cursor: pointer; margin-bottom: 5px; border-bottom: 1px solid #282828; }
-        .track-item:hover { background: #282828; }
-        .auth-container { background: rgba(0,0,0,0.95); position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; z-index: 9999; }
-        .auth-box { background: #181818; padding: 40px; border-radius: 15px; width: 300px; text-align: center; border: 1px solid #333; }
-        .auth-box input { width: 100%; padding: 10px; margin: 10px 0; background: #282828; border: none; color: white; border-radius: 5px; box-sizing: border-box; }
-        #main-auth-btn { background: #1DB954; color: white; border: none; padding: 12px; width: 100%; border-radius: 25px; cursor: pointer; font-weight: bold; }
-        #toggle-auth { color: #b3b3b3; cursor: pointer; margin-top: 15px; font-size: 0.8rem; text-decoration: underline; }
+
+        .controls { display: flex; justify-content: center; align-items: center; gap: 30px; }
+        .controls button { background: none; border: none; color: white; cursor: pointer; }
+        #playpause-btn { color: var(--main-color); }
+
+        .playlist { background: var(--card-bg); padding: 20px; border-radius: 20px; border: 1px solid #222; }
+        .track-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; cursor: pointer; }
+        .track-item:hover { background: #181818; }
+
+        /* Modals / Interfaces secondaires */
+        .modal-overlay { background: rgba(0,0,0,0.95); position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; z-index: 9999; padding: 20px; box-sizing: border-box; overflow-y: auto; }
+        .modal-box { background: #141414; padding: 30px 20px; border-radius: 20px; width: 100%; max-width: 380px; text-align: center; border: 1px solid #222; }
+        .modal-box input, .modal-box select { width: 100%; padding: 12px; margin: 8px 0; background: #181818; border: 1px solid #333; color: white; border-radius: 8px; box-sizing: border-box; }
+        .btn-action { background: var(--main-color); color: black; border: none; padding: 14px; width: 100%; border-radius: 25px; cursor: pointer; font-weight: bold; margin-top: 15px; }
+        .close-modal { color: #b3b3b3; cursor: pointer; margin-top: 20px; display: inline-block; text-decoration: underline; }
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
-    <div id="auth-section" class="auth-container">
-        <div class="auth-box">
-            <h2 id="auth-title">Connexion à Weetoo</h2>
-            <input type="email" id="auth-email" placeholder="Email">
-            <input type="password" id="auth-password" placeholder="Mot de passe">
-            <button onclick="handleAuth()" id="main-auth-btn">Se connecter</button>
-            <p onclick="toggleAuthMode()" id="toggle-auth">Pas de compte ? Créer un compte</p>
+
+    <!-- INTERFACE 1 : ESPACE COMPTE ARTISTE / INSCRIPTION -->
+    <div id="artist-modal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <h2 id="auth-title">Espace Artiste Weetoo</h2>
+            <div id="auth-form">
+                <input type="email" id="auth-email" placeholder="Email de l'artiste">
+                <input type="password" id="auth-password" placeholder="Mot de passe">
+                <button onclick="handleArtistAuth()" class="btn-action" id="main-auth-btn">Se connecter</button>
+                <p id="auth-toggle-text" style="color:#aaa; font-size:0.85rem">Nouveau sur la plateforme ? <span onclick="toggleAuthMode()" style="color:var(--main-color); cursor:pointer">Créer un compte artiste</span></p>
+            </div>
+            <div id="artist-dashboard" class="hidden">
+                <p style="color:#FFF; font-size:1.1rem">Tableau de bord de <strong id="artist-name-display">...</strong></p>
+                <div style="background:#222; padding:15px; border-radius:10px; margin:15px 0;">
+                    <span style="font-size:0.9rem; color:#aaa;">Total Streams Premium</span>
+                    <h3 id="artist-total-streams" style="font-size:2rem; margin:5px 0; color:var(--main-color)">0</h3>
+                </div>
+                <button onclick="handleLogout()" class="btn-action" style="background:#e74c3c; color:white;">Se déconnecter</button>
+            </div>
+            <span class="close-modal" onclick="closeModal('artist-modal')">Fermer</span>
         </div>
     </div>
 
+    <!-- INTERFACE 2 : DASHBOARD ADMIN D'UPLOAD HYPER SIMPLE -->
+    <div id="admin-modal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <h2>Weetoo Studio Admin</h2>
+            <p class="subtitle">Ajouter un nouveau morceau sur la plateforme</p>
+            <input type="text" id="upload-title" placeholder="Titre de la chanson">
+            <input type="text" id="upload-artist" placeholder="Nom de l'artiste">
+            
+            <label style="display:block; text-align:left; font-size:0.85rem; color:#aaa; margin-top:10px;">Fichier Audio (.mp3)</label>
+            <input type="file" id="upload-audio-file" accept="audio/mp3">
+            
+            <label style="display:block; text-align:left; font-size:0.85rem; color:#aaa; margin-top:10px;">Pochette de l'album (.jpg / .png)</label>
+            <input type="file" id="upload-cover-file" accept="image/*">
+            
+            <button onclick="processUpload()" class="btn-action" id="upload-btn">Mettre en ligne le morceau</button>
+            <span class="close-modal" onclick="closeModal('admin-modal')">Retour</span>
+        </div>
+    </div>
+
+    <!-- FENÊTRE PREMIUM -->
+    <div id="premium-modal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <h2>Accès Premium 👑</h2>
+            <p style="font-size: 1rem; color: #fff; line-height: 1.5;">Pour débloquer l'accès Premium, contactez notre service client pour une activation manuelle via Wave, Orange Money ou Airtel Money.</p>
+            <p style="color: var(--main-color); font-weight: bold; font-size: 1.2rem;">📞 +227 XX XX XX XX</p>
+            <span class="close-modal" onclick="closeModal('premium-modal')">Retour</span>
+        </div>
+    </div>
+
+    <!-- RESTE DE L'APPLICATION ACCESSIBLE DIRECTEMENT -->
     <div class="container">
         <header>
-            <h1>Weetoo</h1>
-            <button onclick="handleLogout()" id="logout-btn" class="hidden">Déconnexion</button>
-            <br><br>
-            <input type="text" id="searchBar" placeholder="Rechercher..." onkeyup="searchMusic()">
+            <h1 onclick="openAdmin()">Weetoo</h1>
+            <div class="subtitle">Musique Africaine & Top Sons</div>
+            <div class="nav-buttons">
+                <button onclick="openPremium()" class="btn-premium">👑 Devenir Premium</button>
+                <button onclick="openArtistSpace()" class="btn-artist">🎤 Espace Artiste</button>
+            </div>
+            <input type="text" id="searchBar" placeholder="Rechercher un son, un artiste..." onkeyup="searchMusic()">
         </header>
+
         <main>
             <div class="player">
                 <div class="track-art" id="track-art"></div>
                 <div class="track-details">
-                    <h2 id="track-name">Prêt à jouer</h2>
-                    <h3 id="track-artist" style="color:#b3b3b3">Choisissez une musique</h3>
+                    <h2 id="track-name">Weetoo Player</h2>
+                    <h3 id="track-artist">Choisissez un morceau</h3>
+                    <span class="stream-counter" id="track-streams"><i class="fa fa-headset"></i> 0 streams</span>
                 </div>
                 <div class="slider_container">
                     <span id="current-time">00:00</span>
@@ -64,67 +125,71 @@
                     <span id="total-duration">00:00</span>
                 </div>
                 <div class="controls">
-                    <button onclick="prevTrack()"><i class="fa fa-step-backward fa-2x"></i></button>
-                    <button onclick="playPauseTrack()" id="playpause-btn"><i class="fa fa-play-circle fa-4x"></i></button>
-                    <button onclick="nextTrack()"><i class="fa fa-step-forward fa-2x"></i></button>
+                    <button onclick="prevTrack()"><i class="fa fa-step-backward fa-xl"></i></button>
+                    <button onclick="playPauseTrack()" id="playpause-btn"><i class="fa fa-play-circle fa-3x"></i></button>
+                    <button onclick="nextTrack()"><i class="fa fa-step-forward fa-xl"></i></button>
                 </div>
             </div>
+
             <div class="playlist">
-                <h3>Ma Sélection</h3>
+                <h3>🌍 Playlist Générale</h3>
                 <div id="playlist-container"></div>
             </div>
         </main>
     </div>
 
     <script>
-        let allTracks = [];
-        let track_index = 0;
-        let isPlaying = false;
-        let curr_track = document.createElement('audio');
-        let isSignUpMode = false;
-
-        const SUPABASE_URL = 'https://sxjeysiqtdamrytiwrpk.supabase.co';
+        const SUPABASE_URL = 'https://supabase.co';
         const SUPABASE_KEY = 'sb_publishable_vDtN9OUPLAQDlMtx0bCfdw_zmP9FRia';
-        
-        // Connexion sécurisée
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let allTracks = [], track_index = 0, isPlaying = false, curr_track = document.createElement('audio'), isSignUpMode = false, currentUser = null;
+
+        function openPremium() { document.getElementById('premium-modal').classList.remove('hidden'); }
+        function openArtistSpace() { document.getElementById('artist-modal').classList.remove('hidden'); checkArtistStatus(); }
+        function openAdmin() { document.getElementById('admin-modal').classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
         function toggleAuthMode() {
             isSignUpMode = !isSignUpMode;
-            document.getElementById('auth-title').innerText = isSignUpMode ? "Créer un compte" : "Connexion à Weetoo";
+            document.getElementById('auth-title').innerText = isSignUpMode ? "Créer un compte Artiste" : "Espace Artiste Weetoo";
             document.getElementById('main-auth-btn').innerText = isSignUpMode ? "S'inscrire" : "Se connecter";
-            document.getElementById('toggle-auth').innerText = isSignUpMode ? "Déjà un compte ? Se connecter" : "Pas de compte ? Créer un compte";
         }
 
-        async function handleAuth() {
+        // AUTH ARTISTE
+        async function handleArtistAuth() {
             const email = document.getElementById('auth-email').value;
             const password = document.getElementById('auth-password').value;
             if (isSignUpMode) {
                 const { error } = await supabaseClient.auth.signUp({ email, password });
-                if (error) alert(error.message); else alert("Compte créé ! Connecte-toi maintenant.");
+                if (error) alert(error.message); else alert("Compte artiste créé ! Connectez-vous.");
             } else {
                 const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-                if (error) alert(error.message); else location.reload();
+                if (error) alert(error.message); else checkArtistStatus();
             }
         }
 
-        async function handleLogout() { 
-            await supabaseClient.auth.signOut(); 
-            location.reload(); 
-        }
-
-        async function checkUser() {
+        async function checkArtistStatus() {
             const { data: { user } } = await supabaseClient.auth.getUser();
-            if (user) {
-                document.getElementById('auth-section').classList.add('hidden');
-                document.getElementById('logout-btn').classList.remove('hidden');
-                fetchMusics();
+            if(user) {
+                currentUser = user;
+                document.getElementById('auth-form').classList.add('hidden');
+                document.getElementById('artist-dashboard').classList.remove('hidden');
+                document.getElementById('artist-name-display').innerText = user.email;
+                
+                // Récupérer le nombre de streams de l'artiste connecté
+                let { data: musics } = await supabaseClient.from('musics').select('streams').eq('artist_id', user.id);
+                let total = musics ? musics.reduce((sum, m) => sum + (m.streams || 0), 0) : 0;
+                document.getElementById('artist-total-streams').innerText = total;
             }
         }
 
+        async function handleLogout() { await supabaseClient.auth.signOut(); location.reload(); }
+
+        // LECTURE DIRECTE AU CHARGEMENT (SANS COMPTE OBLIGATOIRE)
         async function fetchMusics() {
             let { data: musics, error } = await supabaseClient.from('musics').select('*');
-            if (!error && musics.length > 0) { 
+            if (!error && musics && musics.length > 0) { 
                 allTracks = musics; 
                 loadTrack(0); 
                 renderPlaylist(allTracks); 
@@ -137,17 +202,32 @@
             curr_track.load();
             document.getElementById("track-name").innerText = allTracks[index].title;
             document.getElementById("track-artist").innerText = allTracks[index].artist;
-            document.getElementById("track-art").style.backgroundImage = `url(${allTracks[index].cover_url})`;
+            document.getElementById("track-streams").innerHTML = `<i class="fa fa-headset"></i> ${allTracks[index].streams || 0} streams`;
+            if(allTracks[index].cover_url) document.getElementById("track-art").style.backgroundImage = `url(${allTracks[index].cover_url})`;
             curr_track.onended = nextTrack;
             setInterval(updateSlider, 1000);
         }
 
-        function playPauseTrack() { isPlaying ? pauseTrack() : playTrack(); }
-        function playTrack() { curr_track.play(); isPlaying = true; document.getElementById("playpause-btn").innerHTML = '<i class="fa fa-pause-circle fa-4x"></i>'; }
-        function pauseTrack() { curr_track.pause(); isPlaying = false; document.getElementById("playpause-btn").innerHTML = '<i class="fa fa-play-circle fa-4x"></i>'; }
+        function playPauseTrack() { 
+            if(!isPlaying) {
+                playTrack();
+                // Incrémentation d'un stream au clic sur Play
+                incrementStream(allTracks[track_index].id);
+            } else {
+                pauseTrack();
+            }
+        }
+        
+        async function incrementStream(id) {
+            let currentStreams = allTracks[track_index].streams || 0;
+            await supabaseClient.from('musics').update({ streams: currentStreams + 1 }).eq('id', id);
+        }
+
+        function playTrack() { curr_track.play().catch(e => {}); isPlaying = true; document.getElementById("playpause-btn").innerHTML = '<i class="fa fa-pause-circle fa-3x"></i>'; }
+        function pauseTrack() { curr_track.pause(); isPlaying = false; document.getElementById("playpause-btn").innerHTML = '<i class="fa fa-play-circle fa-3x"></i>'; }
         function nextTrack() { track_index = (track_index + 1) % allTracks.length; loadTrack(track_index); playTrack(); }
         function prevTrack() { track_index = (track_index - 1 + allTracks.length) % allTracks.length; loadTrack(track_index); playTrack(); }
-        function seekTo() { curr_track.currentTime = curr_track.duration * (document.getElementById("seek_slider").value / 100); }
+        function seekTo() { if(curr_track.duration) curr_track.currentTime = curr_track.duration * (document.getElementById("seek_slider").value / 100); }
 
         function updateSlider() {
             if (!isNaN(curr_track.duration)) {
@@ -160,13 +240,11 @@
         }
 
         function renderPlaylist(list) {
-            const container = document.getElementById('playlist-container'); 
-            container.innerHTML = "";
+            const container = document.getElementById('playlist-container'); container.innerHTML = "";
             list.forEach((track, index) => {
-                const div = document.createElement('div'); 
-                div.classList.add('track-item');
-                div.innerHTML = `<div><strong>${track.title}</strong><br><small>${track.artist}</small></div>`;
-                div.onclick = () => { loadTrack(index); playTrack(); };
+                const div = document.createElement('div'); div.classList.add('track-item');
+                div.innerHTML = `<div><strong>${track.title}</strong><br><small style='color:#aaa'>${track.artist}</small></div><span style='font-size:0.8rem; color:var(--main-color)'><i class='fa fa-play'></i> ${track.streams || 0}</span>`;
+                div.onclick = () => { loadTrack(index); playTrack(); incrementStream(track.id); };
                 container.appendChild(div);
             });
         }
@@ -177,7 +255,56 @@
             renderPlaylist(filtered);
         }
 
-        checkUser();
+        // LOGIQUE D'UPLOAD SANS PASSER PAR SUPABASE
+        async function processUpload() {
+            const title = document.getElementById('upload-title').value;
+            const artist = document.getElementById('upload-artist').value;
+            const audioFile = document.getElementById('upload-audio-file').files[0];
+            const coverFile = document.getElementById('upload-cover-file').files[0];
+            const btn = document.getElementById('upload-btn');
+
+            if(!title || !artist || !audioFile) { alert("Le titre, l'artiste et le fichier MP3 sont obligatoires."); return; }
+            btn.innerText = "Mise en ligne en cours...";
+            btn.disabled = true;
+
+            try {
+                // 1. Upload du fichier Audio
+                const audioName = `${Date.now()}_${audioFile.name}`;
+                const { data: audioData, error: audioErr } = await supabaseClient.storage.from('musics-files').upload(audioName, audioFile);
+                if(audioErr) throw audioErr;
+                const audioUrl = `${SUPABASE_URL}/storage/v1/object/public/musics-files/${audioName}`;
+
+                // 2. Upload de l'image (si présente)
+                let coverUrl = 'https://unsplash.com';
+                if(coverFile) {
+                    const coverName = `${Date.now()}_${coverFile.name}`;
+                    const { data: coverData, error: coverErr } = await supabaseClient.storage.from('musics-files').upload(coverName, coverFile);
+                    if(!coverErr) coverUrl = `${SUPABASE_URL}/storage/v1/object/public/musics-files/${coverName}`;
+                }
+
+                // 3. Insertion en BDD
+                const { error: dbErr } = await supabaseClient.from('musics').insert([{
+                    title: title,
+                    artist: artist,
+                    audio_url: audioUrl,
+                    cover_url: coverUrl,
+                    streams: 0,
+                    artist_id: currentUser ? currentUser.id : null
+                }]);
+
+                if(dbErr) throw dbErr;
+                alert("Morceau ajouté avec succès !");
+                location.reload();
+
+            } catch (error) {
+                alert("Erreur lors de l'upload : " + error.message);
+                btn.innerText = "Mettre en ligne le morceau";
+                btn.disabled = false;
+            }
+        }
+
+        // Lancement immédiat de la musique pour tout le monde
+        window.onload = () => { fetchMusics(); };
     </script>
 </body>
 </html>
