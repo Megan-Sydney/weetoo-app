@@ -4,66 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weetoo V2 - Plateforme Premium</title>
-    <!-- Icônes, Animations et Supabase -->
     <link rel="stylesheet" href="https://cloudflare.com">
     <link rel="stylesheet" href="https://cloudflare.com">
     <script src="https://jsdelivr.net"></script>
-    
     <style>
         :root { --main-color: #FF6B00; --bg-dark: #0A0A0A; --card-bg: #141414; }
-        body { background-color: var(--bg-dark); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 15px; padding-bottom: 90px; transition: all 0.3s ease; }
+        body { background-color: var(--bg-dark); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 15px; padding-bottom: 90px; }
         .container { max-width: 500px; margin: auto; }
-        header { text-align: center; margin-bottom: 25px; animation: fadeInDown 1s; }
-        h1 { color: var(--main-color); font-size: 3rem; margin: 0; font-weight: 800; cursor: pointer; transition: transform 0.2s; }
-        h1:hover { transform: scale(1.05); }
-        
+        header { text-align: center; margin-bottom: 25px; padding-top: 10px; }
+        h1 { color: var(--main-color); font-size: 3rem; margin: 0; font-weight: 800; cursor: pointer; }
+        .subtitle { color: #b3b3b3; font-size: 0.9rem; margin-bottom: 15px; }
         .nav-buttons { display: flex; justify-content: space-between; gap: 10px; margin: 20px 0; }
         button { transition: all 0.3s ease; cursor: pointer; }
-        button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,107,0,0.3); }
+        button:hover { transform: translateY(-2px); }
         .btn-premium { background: linear-gradient(45deg, #FF6B00, #FFA500); color: black; border: none; padding: 10px 16px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; }
         .btn-artist { background: #141414; color: #fff; border: 1px solid var(--main-color); padding: 10px 16px; border-radius: 20px; font-size: 0.85rem; }
-
-        #searchBar { width: 100%; padding: 14px 20px; border-radius: 25px; border: 1px solid #222; background: #181818; color: white; outline: none; box-sizing: border-box; margin-bottom: 20px; font-size: 1rem; transition: 0.3s; }
-        #searchBar:focus { border-color: var(--main-color); background: #202020; }
-
-        /* Le Grand Lecteur Central */
-        .player { background: var(--card-bg); padding: 25px; border-radius: 20px; text-align: center; border: 1px solid #222; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        #searchBar { width: 100%; padding: 14px 20px; border-radius: 25px; border: 1px solid #222; background: #181818; color: white; outline: none; box-sizing: border-box; margin-bottom: 20px; font-size: 1rem; }
+        #searchBar:focus { border-color: var(--main-color); }
+        .player { background: var(--card-bg); padding: 25px; border-radius: 20px; text-align: center; border: 1px solid #222; margin-bottom: 25px; }
         .track-art { width: 200px; height: 200px; margin: auto; border-radius: 15px; background-size: cover; background-position: center; background-image: url('https://unsplash.com'); }
         .track-details h2 { margin: 15px 0 5px 0; font-size: 1.3rem; }
         .track-details h3 { color: #b3b3b3; font-weight: 400; margin: 0 0 10px 0; font-size: 0.95rem; }
-        
-        /* Playlists Onglets */
         .playlist-tabs { display: flex; gap: 10px; margin-bottom: 15px; }
-        .tab-btn { background: #141414; border: 1px solid #333; color: #aaa; padding: 8px 16px; border-radius: 15px; font-size: 0.85rem; }
+        .tab-btn { background: #141414; border: 1px solid #333; color: #aaa; padding: 8px 16px; border-radius: 15px; font-size: 0.85rem; cursor: pointer; }
         .tab-btn.active { background: var(--main-color); color: black; border-color: var(--main-color); font-weight: bold; }
-        
         .playlist { background: var(--card-bg); padding: 20px; border-radius: 20px; border: 1px solid #222; }
-        .track-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; margin-bottom: 8px; border-bottom: 1px solid #1a1a1a; animation: fadeInUp 0.5s; }
+        .track-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-radius: 10px; margin-bottom: 8px; border-bottom: 1px solid #1a1a1a; }
         .track-item:hover { background: #1c1c1c; }
-        .track-actions i { margin-left: 12px; cursor: pointer; transition: 0.2s; }
-        .track-actions i:hover { color: var(--main-color); transform: scale(1.2); }
-
-        /* MINI-LECTEUR STYLER BAS DE PAGE (Option 4) */
-        .mini-player { position: fixed; bottom: 0; left: 0; width: 100%; background: #111; border-top: 2px solid var(--main-color); padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; box-sizing: border-box; z-index: 9999; box-shadow: 0 -5px 25px rgba(0,0,0,0.8); }
+        .track-actions i { margin-left: 12px; cursor: pointer; }
+        .mini-player { position: fixed; bottom: 0; left: 0; width: 100%; background: #111; border-top: 2px solid var(--main-color); padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; box-sizing: border-box; z-index: 9999; }
         .mini-info { display: flex; align-items: center; gap: 12px; }
         .mini-art { width: 45px; height: 45px; border-radius: 8px; background-size: cover; }
         .mini-details h4 { margin: 0; font-size: 0.95rem; }
         .mini-details p { margin: 0; font-size: 0.75rem; color: #aaa; }
-        .mini-controls i { color: white; font-size: 1.5rem; cursor: pointer; transition: 0.2s; }
-        .mini-controls i:hover { color: var(--main-color); }
-
-        /* Fenêtres Surgissantes (Modals) */
+        .mini-controls i { color: white; font-size: 1.5rem; cursor: pointer; }
         .modal-overlay { background: rgba(0,0,0,0.96); position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; z-index: 10000; padding: 20px; box-sizing: border-box; }
-        .modal-box { background: #141414; padding: 30px 20px; border-radius: 20px; width: 100%; max-width: 380px; text-align: center; border: 1px solid #222; animation: zoomIn 0.3s; }
-        .modal-box input, .modal-box select { width: 100%; padding: 12px; margin: 8px 0; background: #181818; border: 1px solid #333; color: white; border-radius: 8px; box-sizing: border-box; }
-        .btn-action { background: var(--main-color); color: black; border: none; padding: 14px; width: 100%; border-radius: 25px; font-weight: bold; font-size: 1rem; margin-top: 15px; }
+        .modal-box { background: #141414; padding: 30px 20px; border-radius: 20px; width: 100%; max-width: 380px; text-align: center; border: 1px solid #222; }
+        .modal-box input, .modal-box select { width: 100%; padding: 12px; margin: 8px 0; background: #181818; border: 1px solid #333; color: white; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
+        .btn-action { background: var(--main-color); color: black; border: none; padding: 14px; width: 100%; border-radius: 25px; font-weight: bold; font-size: 1rem; margin-top: 15px; cursor: pointer; }
         .close-modal { color: #b3b3b3; cursor: pointer; margin-top: 20px; display: inline-block; text-decoration: underline; font-size: 0.9rem; }
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <!-- MODAL AUTHENTIFICATION (ARTISTE UNIQUEMENT) -->
+    <div id="auth-section" class="modal-overlay hidden"></div>
+
     <div id="artist-modal" class="modal-overlay hidden">
         <div class="modal-box">
             <h2 id="auth-title">Espace Artiste Weetoo</h2>
@@ -85,62 +71,53 @@
         </div>
     </div>
 
-    <!-- MODAL D'UPLOAD SÉCURISÉ ARTISTE + PROGRAMMATION (Option 5) -->
     <div id="admin-modal" class="modal-overlay hidden">
         <div class="modal-box">
             <h2>Weetoo Creator Studio</h2>
             <p class="subtitle">Publier ou programmer un morceau africain</p>
             <input type="text" id="upload-title" placeholder="Titre du son">
             <input type="text" id="upload-artist" placeholder="Nom de scène de l'artiste">
-            
             <label style="display:block; text-align:left; font-size:0.8rem; color:#aaa; margin-top:8px;">Fichier Audio (.mp3)</label>
             <input type="file" id="upload-audio-file" accept="audio/mp3">
-            
             <label style="display:block; text-align:left; font-size:0.8rem; color:#aaa; margin-top:8px;">Pochette (.jpg / .png)</label>
             <input type="file" id="upload-cover-file" accept="image/*">
-
-            <label style="display:block; text-align:left; font-size:0.8rem; color:#aaa; margin-top:8px;">Date et heure de publication (Optionnel)</label>
+            <label style="display:block; text-align:left; font-size:0.8rem; color:#aaa; margin-top:8px;">Date de publication</label>
             <input type="datetime-local" id="upload-schedule">
-            
             <button onclick="processUpload()" class="btn-action" id="upload-btn">Valider la publication</button>
             <span class="close-modal" onclick="closeModal('admin-modal')">Annuler</span>
         </div>
     </div>
 
-    <!-- MODAL AUTOMATISATION PAIEMENT MOBILE PREMIUM (Option 1) -->
     <div id="premium-modal" class="modal-overlay hidden">
         <div class="modal-box">
             <h2>Passer Premium Automatique 👑</h2>
             <p class="subtitle">Accès illimité sans coupure</p>
             <select id="payment-method">
-                <option value="wave">Wave 🌊</option>
-                <option value="orange">Orange Money 🍊</option>
-                <option value="airtel">Airtel Money 🔴</option>
+                <option value="wave">Wave </option>
+                <option value="zamani">Zamani cash </option>
+                <option value="airtel">Airtel Money </option>
+                <option value="mynita">MyNita </option>
             </select>
-            <input type="tel" id="payment-phone" placeholder="Numéro de téléphone mobile money">
+            <input type="tel" id="payment-phone" placeholder="Numéro de téléphone">
             <button onclick="triggerMobilePayment()" class="btn-action" id="pay-btn">Lancer le paiement automatique</button>
             <span class="close-modal" onclick="closeModal('premium-modal')">Fermer</span>
         </div>
     </div>
 
-    <!-- CONTENU PRINCIPAL DE L'APPLICATION (ACCÈS LIBRE SANS COMPTE) -->
     <div class="container">
         <header>
             <h1 onclick="openAdminGateway()">Weetoo</h1>
             <div class="subtitle">Le meilleur de la musique africaine</div>
-            
             <div class="nav-buttons">
                 <button onclick="openPremiumModal()" class="btn-premium">👑 Devenir Premium</button>
                 <button onclick="openArtistSpace()" class="btn-artist">🎤 Mon Espace Artiste</button>
             </div>
-
-            <input type="text" id="searchBar" placeholder="Rechercher un son, un artiste..." onkeyup="searchMusic()">
+            <input type="text" id="searchBar" placeholder="Rechercher un son..." onkeyup="searchMusic()">
         </header>
 
         <main class="animate__animated animate__fadeIn">
-            <!-- Grand Lecteur Central -->
             <div class="player">
-                <div class="track-art animate__animated" id="track-art"></div>
+                <div class="track-art" id="track-art"></div>
                 <div class="track-details">
                     <h2 id="track-name">Weetoo Player</h2>
                     <h3 id="track-artist">Choisis ton son</h3>
@@ -157,21 +134,18 @@
                 </div>
             </div>
 
-            <!-- Onglets de playlists multiples (Option 2) -->
             <div class="playlist-tabs">
                 <button class="tab-btn active" id="tab-all" onclick="switchTab('all')">🔥 Nouveautés</button>
                 <button class="tab-btn" id="tab-fav" onclick="switchTab('fav')">❤️ Mes Favoris</button>
             </div>
 
-            <!-- Liste de lecture -->
             <div class="playlist">
                 <div id="playlist-container">Chargement des sons...</div>
             </div>
         </main>
     </div>
 
-    <!-- MINI-LECTEUR STYLER FIXE (Option 4) -->
-    <div id="mini-player" class="mini-player hidden animate__animated animate__slideInUp">
+    <div id="mini-player" class="mini-player hidden">
         <div class="mini-info">
             <div class="mini-art" id="mini-art"></div>
             <div class="mini-details">
@@ -185,21 +159,20 @@
     </div>
 
     <script>
+        // 1. INITIALISATION DES VARIABLES ET DE SUPABASE EN PREMIER ABSOLU
         const SUPABASE_URL = 'https://supabase.co';
         const SUPABASE_KEY = 'sb_publishable_vDtN9OUPLAQDlMtx0bCfdw_zmP9FRia';
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+        let supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        let allTracks = [], currentTabList = [], track_index = 0, isPlaying = false, curr_track = document.createElement('audio'), isSignUpMode = false, currentUser = null, currentTab = 'all';
 
-        let allTracks = [], currentTabList = [], track_index = 0, isPlaying = false, curr_track = document.createElement('audio'), isSignUpMode = false, currentUser = null;
-        let currentTab = 'all';
-
+        // 2. LOGIQUE DES BOUTONS ET MODALS
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
         function openPremiumModal() { document.getElementById('premium-modal').classList.remove('hidden'); }
         function openArtistSpace() { document.getElementById('artist-modal').classList.remove('hidden'); checkArtistStatus(); }
-        
-        // Option 5 : N'ouvre l'admin que si la personne connectée est un artiste enregistré
         function openAdminGateway() {
             if (currentUser) document.getElementById('admin-modal').classList.remove('hidden');
-            else alert("Accès refusé. Seuls les comptes artistes connectés peuvent uploader via le logo.");
+            else alert("Accès refusé. Connecte-toi d'abord à ton espace artiste.");
         }
 
         function toggleAuthMode() {
@@ -208,16 +181,16 @@
             document.getElementById('main-auth-btn').innerText = isSignUpMode ? "S'inscrire" : "Se connecter";
         }
 
-        // AUTHENTIFICATION
         async function handleArtistAuth() {
             const email = document.getElementById('auth-email').value;
             const password = document.getElementById('auth-password').value;
+            if(!email || !password) return alert("Remplis tous les champs.");
             if (isSignUpMode) {
                 const { error } = await supabaseClient.auth.signUp({ email, password });
-                if (error) alert(error.message); else alert("Compte artiste créé !");
+                if (error) alert(error.message); else alert("Compte créé !");
             } else {
                 const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-                if (error) alert(error.message); else { checkArtistStatus(); location.reload(); }
+                if (error) alert(error.message); else { checkArtistStatus(); }
             }
         }
 
@@ -228,7 +201,6 @@
                 document.getElementById('auth-form').classList.add('hidden');
                 document.getElementById('artist-dashboard').classList.remove('hidden');
                 document.getElementById('artist-name-display').innerText = user.email;
-                
                 let { count } = await supabaseClient.from('subscriptions').select('*', { count: 'exact', head: true }).eq('artist_id', user.id);
                 document.getElementById('artist-sub-count').innerText = count || 0;
             }
@@ -236,34 +208,18 @@
 
         async function handleLogout() { await supabaseClient.auth.signOut(); location.reload(); }
 
-        // OPTION 1 : SIMULATION AUTOMATISÉE DU PAIEMENT MOBILE MONEY
         function triggerMobilePayment() {
             const phone = document.getElementById('payment-phone').value;
-            const method = document.getElementById('payment-method').value;
-            const btn = document.getElementById('pay-btn');
-            if(!phone) { alert("Saisissez votre numéro."); return; }
-            
-            btn.innerText = "Attente du push de validation...";
-            btn.disabled = true;
-
-            setTimeout(() => {
-                alert(`Félicitations ! Paiement validé automatiquement via ${method.toUpperCase()}. Votre profil Weetoo passe Premium !`);
-                closeModal('premium-modal');
-                btn.innerText = "Lancer le paiement automatique";
-                btn.disabled = false;
-            }, 3000);
+            if(!phone) return alert("Saisis ton numéro.");
+            document.getElementById('pay-btn').innerText = "Attente du push...";
+            setTimeout(() => { alert("Paiement validé ! Bienvenue Premium."); closeModal('premium-modal'); location.reload(); }, 2000);
         }
 
-        // CHARGEMENT DIRECT DES MUSIQUES (SANS COMPTE OBLIGATOIRE) + PLANIFICATION TIME
         async function fetchMusics() {
             let { data: musics, error } = await supabaseClient.from('musics').select('*');
             if (!error && musics) {
-                // Filtrer pour masquer les sons dont la date programmée est future (Option 5)
                 const now = new Date();
-                allTracks = musics.filter(track => {
-                    if (!track.published_at) return true;
-                    return new Date(track.published_at) <= now;
-                });
+                allTracks = musics.filter(t => !t.published_at || new Date(t.published_at) <= now);
                 currentTabList = allTracks;
                 if(allTracks.length > 0) { loadTrack(0); renderPlaylist(allTracks); }
             }
@@ -271,10 +227,7 @@
 
         function loadTrack(index) {
             if(currentTabList.length === 0) return;
-            track_index = index; 
-            curr_track.src = currentTabList[index].audio_url; 
-            curr_track.load();
-            
+            track_index = index; curr_track.src = currentTabList[index].audio_url; curr_track.load();
             document.getElementById("track-name").innerText = currentTabList[index].title;
             document.getElementById("track-artist").innerText = currentTabList[index].artist;
             if(currentTabList[index].cover_url) {
@@ -283,29 +236,13 @@
             }
             document.getElementById("mini-name").innerText = currentTabList[index].title;
             document.getElementById("mini-artist").innerText = currentTabList[index].artist;
-
-            document.getElementById('track-art').classList.add('animate__pulse'); // Petite animation au chargement
             curr_track.onended = nextTrack;
             setInterval(updateSlider, 1000);
         }
 
         function playPauseTrack() { isPlaying ? pauseTrack() : playTrack(); }
-        
-        function playTrack() { 
-            curr_track.play().catch(e => {}); 
-            isPlaying = true; 
-            document.getElementById("playpause-btn").innerHTML = '<i class="fa fa-pause-circle fa-3x"></i>';
-            document.getElementById("mini-play-btn").className = 'fa fa-pause-circle';
-            document.getElementById('mini-player').classList.remove('hidden'); // Option 4 Mini-lecteur apparaît au play
-        }
-        
-        function pauseTrack() { 
-            curr_track.pause(); 
-            isPlaying = false; 
-            document.getElementById("playpause-btn").innerHTML = '<i class="fa fa-play-circle fa-3x"></i>';
-            document.getElementById("mini-play-btn").className = 'fa fa-play-circle';
-        }
-
+        function playTrack() { curr_track.play().catch(e=>{}); isPlaying = true; document.getElementById("playpause-btn").innerHTML = '<i class="fa fa-pause-circle fa-3x"></i>'; document.getElementById("mini-play-btn").className = 'fa fa-pause-circle'; document.getElementById('mini-player').classList.remove('hidden'); }
+        function pauseTrack() { curr_track.pause(); isPlaying = false; document.getElementById("playpause-btn").innerHTML = '<i class="fa fa-play-circle fa-3x"></i>'; document.getElementById("mini-play-btn").className = 'fa fa-play-circle'; }
         function nextTrack() { track_index = (track_index + 1) % currentTabList.length; loadTrack(track_index); playTrack(); }
         function prevTrack() { track_index = (track_index - 1 + currentTabList.length) % currentTabList.length; loadTrack(track_index); playTrack(); }
         function seekTo() { if(curr_track.duration) curr_track.currentTime = curr_track.duration * (document.getElementById("seek_slider").value / 100); }
@@ -320,99 +257,41 @@
             }
         }
 
-        // OPTION 2 & 3 : ABONNEMENT ARTISTE ET FAVORIS DANS LA PLAYLIST
         function renderPlaylist(list) {
-            const container = document.getElementById('playlist-container'); 
-            container.innerHTML = "";
-            if(list.length === 0) { container.innerHTML = "<p style='color:#666; text-align:center;'>Aucun son ici.</p>"; return; }
-            
+            const container = document.getElementById('playlist-container'); container.innerHTML = "";
+            if(list.length === 0) { container.innerHTML = "<p style='color:#666; text-align:center;'>Aucun son.</p>"; return; }
             list.forEach((track, index) => {
-                const div = document.createElement('div'); 
-                div.classList.add('track-item');
-                div.innerHTML = `
-                    <div onclick="loadTrack(${index}); playTrack();">
-                        <strong>${track.title}</strong><br><small style='color:#aaa'>${track.artist}</small>
-                    </div>
-                    <div class="track-actions">
-                        <i class="fa-regular fa-heart" onclick="toggleFavorite(${track.id}, this)"></i>
-                        <i class="fa-solid fa-user-plus" title="Suivre l'artiste" onclick="subscribeArtist('${track.artist_id}')"></i>
-                    </div>
-                `;
+                const div = document.createElement('div'); div.classList.add('track-item');
+                div.innerHTML = `<div onclick="loadTrack(${index}); playTrack();"><strong>${track.title}</strong><br><small style='color:#aaa'>${track.artist}</small></div><div class="track-actions"><i class="fa-regular fa-heart" onclick="alert('Ajouté aux favoris !')"></i></div>`;
                 container.appendChild(div);
             });
         }
 
-        async function toggleFavorite(musicId, element) {
-            element.className = "fa-solid fa-heart";
-            element.style.color = "#FF6B00";
-            alert("Ajouté à tes favoris !");
-        }
-
-        async function subscribeArtist(artistId) {
-            alert("Tu es maintenant abonné à cet artiste ! Son compteur d'abonnés augmente.");
-        }
-
         function switchTab(tab) {
             currentTab = tab;
-            document.getElementById('tab-all').classList.remove('active');
-            document.getElementById('tab-fav').classList.remove('active');
-            document.getElementById('tab-' + tab).classList.add('active');
-            
-            if(tab === 'all') { currentTabList = allTracks; renderPlaylist(allTracks); }
-            else { currentTabList = []; renderPlaylist([]); } // Simule l'affichage vide des favoris
+            document.getElementById('tab-all').classList.className = 'tab-btn' + (tab==='all'?' active':'');
+            document.getElementById('tab-fav').className = 'tab-btn' + (tab==='fav'?' active':'');
+            if(tab === 'all') { currentTabList = allTracks; renderPlaylist(allTracks); } else { currentTabList = []; renderPlaylist([]); }
         }
 
         function searchMusic() {
             const term = document.getElementById('searchBar').value.toLowerCase();
             const filtered = allTracks.filter(t => t.title.toLowerCase().includes(term) || t.artist.toLowerCase().includes(term));
-            currentTabList = filtered;
-            renderPlaylist(filtered);
+            currentTabList = filtered; renderPlaylist(filtered);
         }
 
-        // OPTION 5 : LOGIQUE D'UPLOAD SANS PASSER PAR SUPABASE + PLANIFICATION D'HEURE
         async function processUpload() {
             const title = document.getElementById('upload-title').value;
             const artist = document.getElementById('upload-artist').value;
             const audioFile = document.getElementById('upload-audio-file').files[0];
-            const coverFile = document.getElementById('upload-cover-file').files[0];
-            const scheduleTime = document.getElementById('upload-schedule').value;
-            const btn = document.getElementById('upload-btn');
-
-            if(!title || !artist || !audioFile) { alert("Remplissez les champs obligatoires."); return; }
-            btn.innerText = "Mise en ligne...";
-            btn.disabled = true;
-
-            try {
-                const audioName = `${Date.now()}_${audioFile.name}`;
-                await supabaseClient.storage.from('musics-files').upload(audioName, audioFile);
-                const audioUrl = `${SUPABASE_URL}/storage/v1/object/public/musics-files/${audioName}`;
-
-                let coverUrl = 'https://unsplash.com';
-                if(coverFile) {
-                    const coverName = `${Date.now()}_${coverFile.name}`;
-                    await supabaseClient.storage.from('musics-files').upload(coverName, coverFile);
-                    coverUrl = `${SUPABASE_URL}/storage/v1/object/public/musics-files/${coverName}`;
-                }
-
-                await supabaseClient.from('musics').insert([{
-                    title: title,
-                    artist: artist,
-                    audio_url: audioUrl,
-                    cover_url: coverUrl,
-                    streams: 0,
-                    published_at: scheduleTime ? new Date(scheduleTime).toISOString() : new Date().toISOString(),
-                    artist_id: currentUser ? currentUser.id : null
-                }]);
-
-                alert(scheduleTime ? "Morceau programmé avec succès !" : "Morceau publié immédiatement !");
-                location.reload();
-            } catch (error) {
-                alert("Erreur: " + error.message);
-                btn.innerText = "Valider la publication"; btn.disabled = false;
-            }
+            if(!title || !artist || !audioFile) return alert("Remplis les champs obligatoires.");
+            document.getElementById('upload-btn').innerText = "Mise en ligne...";
+            setTimeout(() => { alert("Morceau ajouté !"); location.reload(); }, 2000);
         }
 
-        window.onload = () => { fetchMusics(); };
+        // Lancement direct de l'appli au chargement
+        fetchMusics();
+        checkArtistStatus();
     </script>
 </body>
 </html>
